@@ -10,7 +10,7 @@ static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;     /* 0 means no bar */
 static const int topbar             = 1;     /* 0 means bottom bar */
 //static const char *fonts[]	    = {"monospace:size=10"};
-static const char *fonts[]	    = {"MesloLGS NF:size=10"};
+static const char *fonts[]	    = {"MesloLGS NF:size=10","JoyPixels:pixelsize=10:antialias=true:autohint=true"};
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -25,19 +25,36 @@ static const char col5[]            = "#ffffff";
 static const char col6[]            = "#ffffff";
 
 enum { SchemeNorm, SchemeCol1, SchemeCol2, SchemeCol3, SchemeCol4,
-       SchemeCol5, SchemeCol6, SchemeSel }; /* color schemes */
+       SchemeCol5, SchemeCol6,SchemeCol7,SchemeCol8, SchemeSel }; /* color schemes */
 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm]  = { col_gray3, col_gray1, col_gray2 },
 	//[SchemeCol1]  = { col1,      col_gray1, col_gray2 },
-	[SchemeCol1]  = { col1,     "#FF0000" , col_gray2 },
-	[SchemeCol2]  = { "#FF0000", col_gray1 , col_gray2 },
 	//[SchemeCol2]  = { col2,      col_gray1, col_gray2 },
-	[SchemeCol3]  = { col3,      col_gray1, col_gray2 },
-	[SchemeCol4]  = { col4,      col_gray1, col_gray2 },
-	[SchemeCol5]  = { col5,      col_gray1, col_gray2 },
-	[SchemeCol6]  = { col6,      col_gray1, col_gray2 },
+	//[SchemeCol3]  = { col3,      col_gray1, col_gray2 },
+	//[SchemeCol4]  = { col4,      col_gray1, col_gray2 },
+	//[SchemeCol5]  = { col5,      col_gray1, col_gray2 },
+	//red
+	[SchemeCol1]  = { col1,     "#FF6B6B" , col_gray2 },
+	[SchemeCol2]  = { "#FF6B6B", col_gray1 , col_gray2 },
+
+	//[SchemeCol3]  = { "#FF6B6B", "#4D96FF" , col_gray2 },
+
+	//[SchemeCol4]  = { col1,     "#4D96FF" , col_gray2 },
+	//[SchemeCol5]  = { "#4D96FF", col_gray1 , col_gray2 },
+
+	[SchemeCol3]  = { "#FF6B6B",  "#6BCB77", col_gray2 },
+
+	[SchemeCol4]  = { col1,     "#6BCB77" , col_gray2 },
+	[SchemeCol5]  = { "#6BCB77", col_gray1 , col_gray2 },
+
+	[SchemeCol6]  = { "#6BCB77", "#4D96FF", col_gray2 },
+
+	[SchemeCol7]  = { col6,      "#4D96FF", col_gray2 },
+	[SchemeCol8]  = { "#4D96FF",      col_gray1, col_gray2 },
+
+
 	[SchemeSel]   = { col_gray4, col_cyan,  col_cyan  },
 };
 
@@ -51,7 +68,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	//{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 };
 
 /* layout(s) */
@@ -68,7 +85,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -82,6 +99,9 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char *browser[]  = { "chromium", NULL };
+static const char *filebrowser[]  = { "thunar", NULL };
+static const char *dmlock[]  = { "dm-tool", "lock" };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -104,10 +124,10 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY,                       XK_comma,  focusmon,       {.i = +1 } },
+	{ MODKEY,                       XK_period, focusmon,       {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = -1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -118,6 +138,9 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ MODKEY|ControlMask,           XK_b,	   spawn,          {.v = browser } },
+	{ MODKEY|ControlMask,           XK_t,	   spawn,          {.v = filebrowser } },
+	{ MODKEY|ControlMask,           XK_l,	   spawn,          {.v = dmlock } },
 };
 
 /* button definitions */
